@@ -26,9 +26,8 @@ function submitProject(e) {
     err.textContent = '';
 
     // Simulação: você poderia enviar para o backend aqui via fetch.
-    alert('Projeto criado (simulação):\n' + JSON.stringify({nome, dataInicio, dataEnc, valor, situacao}, null, 2));
 
     // redireciona para lista de projetos (simples)
-    window.location.href = '/projects/';
+
     return false;
 }

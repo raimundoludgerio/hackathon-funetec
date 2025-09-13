@@ -1,10 +1,10 @@
 const formularios = {
     dados_projeto: `
          <h2 class="text-center text-2xl">Dados do Projeto</h2>
-            <form action="" class="space-y-4 bg-white rounded-xl" onsubmit="return submitProject(event)">
+            <form action="/projects/new" method="post" class="space-y-4 bg-white rounded-xl" id="dadosProjeto">
                 <div>
                     <label class="text-sm block mb-1">Nome do projeto *</label>
-                    <input id="p_nome" class="w-full border rounded px-3 py-2" required/>
+                    <input name="nome" id="p_nome" class="w-full border rounded px-3 py-2" required/>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
@@ -43,11 +43,16 @@ const formularios = {
             </form>
     `,
     requisition: `
-        <h2 class="text-center text-2xl">Requisição</h2>
-        <form class="space-y-4 bg-white rounded-xl" onsubmit="return submitProject(event)">
-           
-        </form>
-    `
+       
+            <h2 class="text-center text-2xl">Requisição</h2>
+       
+    `,
+    order: `
+          <h2 class="text-center text-2xl">Ordem</h2>
+    `,
+    contract: `
+          <h2 class="text-center text-2xl">Contrato</h2>
+    `,
 }
 let formularioVisivel = null;
 
@@ -60,10 +65,45 @@ function mostrarFormulario(formId) {
         container.innerHTML = '';
         containerForm.classList.remove('shadow-xl', 'bg-white');
         formularioVisivel = null;
-    } else {
-        // Senão, mostra o formulário correspondente
-        container.innerHTML = formularios[formId];
-        formularioVisivel = formId;
+        return
     }
+    // Senão, mostra o formulário correspondente
+    container.innerHTML = formularios[formId];
+    formularioVisivel = formId;
 
+    if (formId == 'dados_projeto') {
+        const form = document.getElementById('dadosProjeto');
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault(); // Impede o envio tradicional
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/projects/new', {
+                    method: 'POST',
+                    body: formData
+                });
+                console.log("RESPONSE")
+                console.log(response.body)
+                if (response.ok) {
+                    // Sucesso! Agora habilita o Botão 2 e mostra o Formulário B
+                    const cardRequisition = document.getElementById('cardRequisition');
+                    const linkDesabilidato = document.querySelector('.desabilitado')
+                    cardRequisition.classList.remove("bg-gray-300");
+                    cardRequisition.classList.remove("text-gray-500");
+                    cardRequisition.classList.add("bg-green-600");
+                    cardRequisition.classList.add("text-white");
+                    linkDesabilidato.classList.remove('desabilitado')
+
+                    document.getElementById("titleCardRequisition").classList.remove("text-gray-700")
+                    document.getElementById("tipoRequisition").classList.remove("text-gray-500")
+                    mostrarFormulario('requisition');
+                } else {
+                    alert('Erro ao enviar formulário A.');
+                }
+            } catch (error) {
+                console.error('Erro ao enviar:', error);
+                alert('Erro de rede ao enviar formulário A.');
+            }
+        });
+    }
 }

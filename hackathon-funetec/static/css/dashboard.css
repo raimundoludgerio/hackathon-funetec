@@ -59,6 +59,14 @@ a {
     font-weight: 700
 }
 
+.desabilitado {
+    pointer-events: none;
+    opacity: 0.5;
+    text-decoration: none;
+    cursor: default;
+    color: gray;
+}
+
 .topnav a {
     margin-left: 12px;
     color: #eee;

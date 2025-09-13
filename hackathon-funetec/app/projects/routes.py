@@ -45,12 +45,16 @@ def detail(cod_projeto):
 
 @bp.route("/new", methods=["GET", "POST"])
 def create():
+    print("chamou pelo menos!!!!")
     if request.method == "POST":
         nome = request.form.get("nome")
+        print("-="*20)
+        print(nome)
+        print("-="*20)
         # (validações aqui)
         p = Project(nome=nome)
         db.session.add(p)
         db.session.commit()
         flash("Projeto criado", "success")
-        return redirect(url_for("projects.list_projects"))
+        return redirect(url_for("projects.list_projects")), 200
     return render_template("projects/create.html")
