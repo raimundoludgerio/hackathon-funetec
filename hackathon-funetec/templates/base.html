@@ -1,29 +1,31 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>{% block title %}Gestor{% endblock %}</title>
+    {% block styles %} {% endblock %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-  </head>
-  <body>
-    <header class="app-header">
-      <div class="header-inner">
-        <div class="brand">Gestor Hackathon</div>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+<header class="app-header">
+    <div class="header-inner">
+        <div class="brand">Nome legal</div>
         <nav class="topnav">
-          <a href="{{ url_for('main.index') }}">Dashboard</a>
-          <a href="{{ url_for('projects.list_projects') }}">Projetos</a>
+            <a href="{{ url_for('main.index') }}">Dashboard</a>
+            <a href="{{ url_for('projects.list_projects') }}">Projetos</a>
         </nav>
-      </div>
-    </header>
+    </div>
+</header>
 
-    <main class="page">
-      {% block content %}{% endblock %}
-    </main>
+<main class="page">
+    {% block content %}{% endblock %}
+</main>
 
-    <script>
-      window.__INIT_DATA = {{ data|tojson | safe if data is defined else 'null' }};
-    </script>
-    <script src="{{ url_for('static', filename='javascript/dashboard.js') }}"></script>
-  </body>
+<script src="{{ url_for('static', filename='javascript/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/projetos.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/forms.js') }}"></script>
+
+</body>
 </html>

@@ -4,9 +4,9 @@ from ..models import Project
 from .. import db
 import json
 
-
 @bp.route("/")
 def index():
+
     data = {
         "project": {
             "codProjeto": 123,
@@ -31,5 +31,8 @@ def index():
             {"cod": 988, "tipo": "Serviço", "data": "20/05/2025", "valor": 8000, "situacao": "1"}
         ]
     }
-
     return render_template("dashboard/dashboard.html", data=data)
+
+@bp.route("/new")
+def create():
+    return render_template("dashboard/main.html")

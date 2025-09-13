@@ -1,0 +1,14 @@
+{
+  "numContrato": "0042/2025",
+  "codOrdem": 987,
+  "descricao": "Serviço Y",
+  "cpfcnpj": "00000000000000",
+  "contratado": "Fulano Silva",
+  "tipoPessoa": 1,
+  "dataInicio": "01/03/2025",
+  "dataFim": "30/09/2025",
+  "valor": 12000.00,
+  "parcelas": 12,
+  "dataParcelaInicial": "01/04/2025",
+  "situacao": "2"
+}

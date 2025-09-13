@@ -1,59 +1,90 @@
 {% extends "base.html" %}
 {% block title %}Dashboard - Projeto{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="app">
-  <aside class="sidebar">
-    <h4>Filtros rápidos</h4>
-    <div class="filter-list">
-      <div class="chip" onclick="filterBy('all')">Todos</div>
-      <div class="chip" onclick="filterBy('1')">Aguardando</div>
-      <div class="chip" onclick="filterBy('2')">Em andamento</div>
-      <div class="chip" onclick="filterBy('6')">Concluídos</div>
-    </div>
-    <hr/>
-    <h4>Projetos recentes</h4>
-    <div id="recentProjects"></div>
-  </aside>
-
-  <section class="content">
-    <h2>Painel do Projeto: <span id="projectTitle">{{ data.project.nome if data and data.project else '—' }}</span></h2>
-    <div class="pipeline" id="pipeline"></div>
-
-    <div class="orders-list">
-      <h4>Ordens relacionadas</h4>
-      <table>
-        <thead><tr><th>Cod</th><th>Tipo</th><th>Data</th><th>Valor</th><th>Situação</th></tr></thead>
-        <tbody id="ordersTableBody"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <aside class="drawer" id="drawer">
-    <h3>Detalhes</h3>
-    <p class="muted-note">Clique em um card para ver detalhes aqui.</p>
-
-    <div id="contractForm" style="display:none; margin-top:12px;">
-      <h3>Contrato</h3>
-      <div class="form-row">
-        <div class="field"><label>Número</label><input id="numContrato" type="text" placeholder="0001/2025"></div>
-        <div class="field"><label>Nome</label><input id="contratado" type="text"></div>
-      </div>
-      <div class="form-row">
-        <div class="field"><label>CPF/CNPJ</label><input id="cpfcnpj" maxlength="14" oninput="maskOnlyNumbers(this)"></div>
-        <div class="field"><label>Data início</label><input id="dataInicio" type="date"></div>
-      </div>
-      <div class="form-row">
-        <div class="field"><label>Valor</label><input id="valor" oninput="formatCurrencyInput(this)"></div>
-        <div class="field"><label>Tipo Pessoa</label>
-          <select id="tipoPessoa"><option value="1">PF</option><option value="2">PJ</option></select>
+    <aside class="sidebar">
+        <h4>Filtros rápidos</h4>
+        <div class="filter-list">
+            <div class="chip" onclick="filterBy('all')">Todos</div>
+            <div class="chip" onclick="filterBy('1')">Aguardando</div>
+            <div class="chip" onclick="filterBy('2')">Em andamento</div>
+            <div class="chip" onclick="filterBy('6')">Concluídos</div>
         </div>
-      </div>
-      <div style="margin-top:10px;">
-        <button class="btn" onclick="saveContract()">Salvar</button>
-        <button class="btn ghost" onclick="closeContract()">Fechar</button>
-      </div>
-      <p id="formError" class="error" style="display:none;"></p>
-    </div>
-  </aside>
+        <hr/>
+        <h4>Projetos recentes</h4>
+        <div id="recentProjects"></div>
+    </aside>
+
+    <section class="content">
+        <div class="grid grid-cols-3 gap-2">
+            <h2>Painel do Projeto:
+                <span id="projectTitle">{{ data.project.nome if data and data.project else '—' }}</span>
+            </h2>
+            <div></div>
+            <a href="{{url_for('main.create')}}" id="newProject"
+               class="ml-4 inline-flex items-center gap-2 text-white px-2 py-2 rounded-lg text-sm">
+                <!-- ícone + (SVG) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                </svg>
+                Novo Projeto
+            </a>
+        </div>
+        <div class="pipeline" id="pipeline"></div>
+
+        <div class="orders-list">
+            <h4>Ordens relacionadas</h4>
+            <table>
+                <thead>
+                <tr>
+                    <th>Cod</th>
+                    <th>Tipo</th>
+                    <th>Data</th>
+                    <th>Valor</th>
+                    <th>Situação</th>
+                </tr>
+                </thead>
+                <tbody id="ordersTableBody"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <aside class="drawer" id="drawer">
+        <h3>Detalhes</h3>
+        <p class="muted-note">Clique em um card para ver detalhes aqui.</p>
+
+        <div id="contractForm" style="display:none; margin-top:12px;">
+            <h3>Contrato</h3>
+            <div class="form-row">
+                <div class="field"><label>Número</label><input id="numContrato" type="text" placeholder="0001/2025">
+                </div>
+                <div class="field"><label>Nome</label><input id="contratado" type="text"></div>
+            </div>
+            <div class="form-row">
+                <div class="field"><label>CPF/CNPJ</label><input id="cpfcnpj" maxlength="14"
+                                                                 oninput="maskOnlyNumbers(this)"></div>
+                <div class="field"><label>Data início</label><input id="dataInicio" type="date"></div>
+            </div>
+            <div class="form-row">
+                <div class="field"><label>Valor</label><input id="valor" oninput="formatCurrencyInput(this)"></div>
+                <div class="field"><label>Tipo Pessoa</label>
+                    <select id="tipoPessoa">
+                        <option value="1">PF</option>
+                        <option value="2">PJ</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-top:10px;">
+                <button class="btn" onclick="saveContract()">Salvar</button>
+                <button class="btn ghost" onclick="closeContract()">Fechar</button>
+            </div>
+            <p id="formError" class="error" style="display:none;"></p>
+        </div>
+    </aside>
 </div>
 {% endblock %}
