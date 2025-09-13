@@ -36,3 +36,7 @@ def index():
 @bp.route("/new")
 def create():
     return render_template("dashboard/main.html")
+
+@bp.route("/ajuda")
+def pagina_ajuda():
+    return render_template("dashboard/main.html")
