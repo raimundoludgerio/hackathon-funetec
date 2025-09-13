@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Projeto{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<form action="#" method="post" class="space-y-4 bg-white rounded-xl p-6" id="comparativoPrevistoRealizado">
+    <!-- Descrição -->
+    <div>
+        <label class="text-sm block mb-1">Descrição *</label>
+        <input name="descricao" id="crp_descricao" class="w-full border rounded px-3 py-2" required />
+    </div>
+
+    <!-- Datas -->
+    <div class="grid grid-cols-2 gap-3">
+        <div>
+            <label class="text-sm block mb-1">Data Solicitação</label>
+            <input id="crp_dataSolicitacao" type="date" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+            <label class="text-sm block mb-1">Data Limite</label>
+            <input id="crp_dataLimite" type="date" class="w-full border rounded px-3 py-2" />
+        </div>
+    </div>
+
+    <!-- Valores Previsto x Realizado -->
+    <div class="grid grid-cols-2 gap-3">
+        <div>
+            <label class="text-sm block mb-1">Valor Previsto (R$)</label>
+            <input id="crp_valorPrevisto" class="w-full border rounded px-3 py-2" oninput="formatCurrencyInput(this)" />
+        </div>
+        <div>
+            <label class="text-sm block mb-1">Valor Realizado (R$)</label>
+            <input id="crp_valorRealizado" class="w-full border rounded px-3 py-2"
+                oninput="formatCurrencyInput(this)" />
+        </div>
+    </div>
+
+    <!-- Data Realizado -->
+    <div>
+        <label class="text-sm block mb-1">Data Realizado</label>
+        <input id="crp_dataRealizado" type="date" class="w-full border rounded px-3 py-2" />
+    </div>
+
+    <!-- Situação -->
+    <div>
+        <label class="text-sm block mb-1">Situação</label>
+        <select id="crp_situacao" class="w-full border rounded px-3 py-2">
+            <option value="1">Aguardando</option>
+            <option value="2">Pago</option>
+            <option value="3">Cancelado</option>
+        </select>
+    </div>
+
+    <!-- Mensagem de Erro -->
+    <p id="crpError" class="text-sm text-red-600"></p>
+
+    <!-- Botões -->
+    <div class="flex gap-3">
+        <button type="submit" class="px-4 py-2 bg-emerald-500 text-white rounded">Salvar</button>
+        <a href="{{ url_for('main.create') }}" class="px-4 py-2 border rounded">Cancelar</a>
+    </div>
+</form>
+
+<script>
+    // Função simples para formatar input monetário
+    function formatCurrencyInput(input) {
+        let value = input.value.replace(/\D/g, '');
+        value = (value / 100).toFixed(2) + '';
+        value = value.replace('.', ',');
+        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        input.value = value;
+    }
+</script>
+
+{% endblock %}

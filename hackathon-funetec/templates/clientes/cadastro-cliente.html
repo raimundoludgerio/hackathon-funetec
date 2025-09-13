@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Projetos{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cliente.css') }}">
+{% endblock %}
+{% block content %}
+<form action="#" method="post" class="w-75 space-y-4 bg-white rounded-xl p-4" id="cadastroPessoa">
+    <!-- Tipo de Pessoa -->
+    <div>
+      <label class="text-sm block mb-1">Tipo de Pessoa *</label>
+      <select id="tipoPessoa" name="tipoPessoa" class="w-full border rounded px-3 py-2" required onchange="togglePessoa()">
+        <option value="">Selecione...</option>
+        <option value="fisica">Pessoa Física</option>
+        <option value="juridica">Pessoa Jurídica</option>
+      </select>
+    </div>
+  
+    <!-- Campos comuns -->
+    <div>
+      <label class="text-sm block mb-1">Nome / Razão Social *</label>
+      <input name="nome" id="nome" class="w-full border rounded px-3 py-2" required/>
+    </div>
+    <div>
+      <label class="text-sm block mb-1">E-mail *</label>
+      <input type="email" name="email" id="email" class="w-full border rounded px-3 py-2" required/>
+    </div>
+    <div>
+      <label class="text-sm block mb-1">Telefone *</label>
+      <input type="tel" name="telefone" id="telefone" class="w-full border rounded px-3 py-2" required/>
+    </div>
+  
+    <!-- Pessoa Física -->
+    <div id="pessoaFisica" class="hidden space-y-3">
+      <div>
+        <label class="text-sm block mb-1">CPF *</label>
+        <input name="cpf" id="cpf" class="w-full border rounded px-3 py-2"/>
+      </div>
+      <div>
+        <label class="text-sm block mb-1">Data de Nascimento *</label>
+        <input type="date" name="dataNascimento" id="dataNascimento" class="w-full border rounded px-3 py-2"/>
+      </div>
+    </div>
+  
+    <!-- Pessoa Jurídica -->
+    <div id="pessoaJuridica" class="hidden space-y-3">
+      <div>
+        <label class="text-sm block mb-1">CNPJ *</label>
+        <input name="cnpj" id="cnpj" class="w-full border rounded px-3 py-2"/>
+      </div>
+      <div>
+        <label class="text-sm block mb-1">Inscrição Estadual</label>
+        <input name="inscricaoEstadual" id="inscricaoEstadual" class="w-full border rounded px-3 py-2"/>
+      </div>
+    </div>
+  
+    <!-- Botões -->
+    <p id="pessoaError" class="text-sm text-red-600"></p>
+    <div class="flex gap-3">
+      <button type="submit" class="px-4 py-2 bg-emerald-500 text-white rounded">Salvar</button>
+      <a href="{{ url_for('main.create') }}" class="px-4 py-2 border rounded">Cancelar</a>
+    </div>
+  </form>
+  
+  <script>
+    function togglePessoa() {
+      const tipo = document.getElementById("tipoPessoa").value;
+      document.getElementById("pessoaFisica").classList.add("hidden");
+      document.getElementById("pessoaJuridica").classList.add("hidden");
+  
+      if (tipo === "fisica") {
+        document.getElementById("pessoaFisica").classList.remove("hidden");
+      } else if (tipo === "juridica") {
+        document.getElementById("pessoaJuridica").classList.remove("hidden");
+      }
+    }
+  </script>
+  
+{% endblock %}
