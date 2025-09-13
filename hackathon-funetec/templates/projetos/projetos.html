@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Projetos{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cliente.css') }}">
+{% endblock %}
+{% block content %}
+<form action="#" method="post" class="space-y-4 bg-white rounded-xl p-4" id="dadosProjeto">
+    <!-- Descrição -->
+    <div>
+        <label class="text-sm block mb-1">Descrição *</label>
+        <input name="descricao" id="p_descricao" class="w-full border rounded px-3 py-2" required />
+    </div>
+
+    <!-- Responsável -->
+    <div>
+        <label class="text-sm block mb-1">Responsável *</label>
+        <input name="responsavel" id="p_responsavel" class="w-full border rounded px-3 py-2" required />
+    </div>
+
+    <!-- Datas -->
+    <div class="grid grid-cols-2 gap-3">
+        <div>
+            <label class="text-sm block mb-1">Data Solicitação</label>
+            <input name="dataSolicitacao" id="p_dataSolicitacao" type="date" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+            <label class="text-sm block mb-1">Data Limite</label>
+            <input name="dataLimite" id="p_dataLimite" type="date" class="w-full border rounded px-3 py-2" />
+        </div>
+    </div>
+
+    <!-- Valores -->
+    <div class="grid grid-cols-2 gap-3">
+        <div>
+            <label class="text-sm block mb-1">Valor Previsto (R$)</label>
+            <input name="valorPrevisto" id="p_valor" class="w-full border rounded px-3 py-2"
+                oninput="formatCurrencyInput(this)" />
+        </div>
+        <div>
+            <label class="text-sm block mb-1">Valor Recebido (R$)</label>
+            <input name="valorRecebido" id="p_valorRecebido" class="w-full border rounded px-3 py-2"
+                oninput="formatCurrencyInput(this)" />
+        </div>
+    </div>
+
+    <!-- Data recebimento -->
+    <div>
+        <label class="text-sm block mb-1">Data Recebido</label>
+        <input name="dataRecebido" id="p_dataRecebido" type="date" class="w-full border rounded px-3 py-2" />
+    </div>
+
+    <!-- Situação -->
+    <div>
+        <label class="text-sm block mb-1">Situação</label>
+        <select name="situacao" id="p_situacao" class="w-full border rounded px-3 py-2">
+            <option value="1">Aguardando</option>
+            <option value="2">Em Andamento</option>
+            <option value="3">Concluído</option>
+            <option value="4">Cancelado</option>
+        </select>
+    </div>
+
+    <!-- Mensagem de erro -->
+    <p id="projError" class="text-sm text-red-600"></p>
+
+    <!-- Botões -->
+    <div class="flex gap-3">
+        <button type="submit" class="px-4 py-2 bg-emerald-500 text-white rounded">Salvar</button>
+        <a href="{{ url_for('main.create') }}" class="px-4 py-2 border rounded">Cancelar</a>
+    </div>
+</form>
+
+{% endblock %}

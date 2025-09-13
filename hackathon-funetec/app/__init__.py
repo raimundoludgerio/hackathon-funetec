@@ -29,4 +29,7 @@ def create_app(config_class=Config):
     from .contracts import bp as contracts_bp
     app.register_blueprint(contracts_bp, url_prefix="/contracts")
 
+    from .cliente import bp as clientes_pb
+    app.register_blueprint(clientes_pb, url_prefix="/clientes")
+
     return app

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Projetos{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cliente.css') }}">
+{% endblock %}
+{% block content %}
+<form action="#" method="post" class="space-y-4 bg-white rounded-xl p-4" id="cadastroPrestador">
+    <!-- Tipo de Prestador -->
+    <div>
+      <label class="text-sm block mb-1">Tipo de Prestador *</label>
+      <select id="tipoPrestador" name="tipoPrestador" class="w-full border rounded px-3 py-2" required onchange="togglePrestador()">
+        <option value="">Selecione...</option>
+        <option value="fisica">Pessoa Física</option>
+        <option value="juridica">Pessoa Jurídica</option>
+      </select>
+    </div>
+  
+    <!-- Campos comuns -->
+    <div>
+      <label class="text-sm block mb-1">Nome / Razão Social *</label>
+      <input name="nome" id="nome" class="w-full border rounded px-3 py-2" required/>
+    </div>
+  
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="text-sm block mb-1">E-mail *</label>
+        <input type="email" name="email" id="email" class="w-full border rounded px-3 py-2" required/>
+      </div>
+      <div>
+        <label class="text-sm block mb-1">Telefone *</label>
+        <input type="tel" name="telefone" id="telefone" class="w-full border rounded px-3 py-2" required/>
+      </div>
+    </div>
+  
+    <!-- Pessoa Física -->
+    <div id="prestadorFisica" class="hidden space-y-3">
+      <div>
+        <label class="text-sm block mb-1">CPF *</label>
+        <input name="cpf" id="cpf" class="w-full border rounded px-3 py-2"/>
+      </div>
+      <div>
+        <label class="text-sm block mb-1">Data de Nascimento *</label>
+        <input type="date" name="dataNascimento" id="dataNascimento" class="w-full border rounded px-3 py-2"/>
+      </div>
+    </div>
+  
+    <!-- Pessoa Jurídica -->
+    <div id="prestadorJuridica" class="hidden space-y-3">
+      <div>
+        <label class="text-sm block mb-1">CNPJ *</label>
+        <input name="cnpj" id="cnpj" class="w-full border rounded px-3 py-2"/>
+      </div>
+      <div>
+        <label class="text-sm block mb-1">Inscrição Estadual</label>
+        <input name="inscricaoEstadual" id="inscricaoEstadual" class="w-full border rounded px-3 py-2"/>
+      </div>
+    </div>
+  
+    <!-- Situação -->
+    <div>
+      <label class="text-sm block mb-1">Situação</label>
+      <select id="situacao" name="situacao" class="w-full border rounded px-3 py-2">
+        <option value="1">Ativo</option>
+        <option value="0">Inativo</option>
+      </select>
+    </div>
+  
+    <!-- Erro -->
+    <p id="prestadorError" class="text-sm text-red-600"></p>
+  
+    <!-- Botões -->
+    <div class="flex gap-3">
+      <button type="submit" class="px-4 py-2 bg-emerald-500 text-white rounded">Salvar</button>
+      <a href="{{ url_for('main.create') }}" class="px-4 py-2 border rounded">Cancelar</a>
+    </div>
+  </form>
+  
+  <script>
+    function togglePrestador() {
+      const tipo = document.getElementById("tipoPrestador").value;
+      document.getElementById("prestadorFisica").classList.add("hidden");
+      document.getElementById("prestadorJuridica").classList.add("hidden");
+  
+      if (tipo === "fisica") {
+        document.getElementById("prestadorFisica").classList.remove("hidden");
+      } else if (tipo === "juridica") {
+        document.getElementById("prestadorJuridica").classList.remove("hidden");
+      }
+    }
+  </script>
+{% endblock %}

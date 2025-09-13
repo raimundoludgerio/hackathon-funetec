@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Projeto{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<form action="#" method="post" class="space-y-4 bg-white rounded-xl p-4" id="dadosContrato">
+    <!-- Número do Contrato -->
+    <div>
+        <label class="text-sm block mb-1">Número do Contrato *</label>
+        <input name="numContrato" id="c_numContrato" class="w-full border rounded px-3 py-2" required />
+    </div>
+
+    <!-- Descrição -->
+    <div>
+        <label class="text-sm block mb-1">Descrição *</label>
+        <input name="descricao" id="c_descricao" class="w-full border rounded px-3 py-2" required />
+    </div>
+
+    <!-- Contratado -->
+    <div>
+        <label class="text-sm block mb-1">Contratado *</label>
+        <input name="contratado" id="c_contratado" class="w-full border rounded px-3 py-2" required />
+    </div>
+
+    <!-- CPF / CNPJ -->
+    <div>
+        <label class="text-sm block mb-1">CPF / CNPJ *</label>
+        <input name="cpfCnpj" id="c_cpfCnpj" class="w-full border rounded px-3 py-2" required />
+    </div>
+
+    <!-- Datas -->
+    <div class="grid grid-cols-2 gap-3">
+        <div>
+            <label class="text-sm block mb-1">Data Início *</label>
+            <input name="dataInicio" id="c_dataInicio" type="date" class="w-full border rounded px-3 py-2" required />
+        </div>
+        <div>
+            <label class="text-sm block mb-1">Data Encerramento</label>
+            <input name="dataEncerramento" id="c_dataEncerramento" type="date"
+                class="w-full border rounded px-3 py-2" />
+        </div>
+    </div>
+
+    <!-- Valores -->
+    <div class="grid grid-cols-2 gap-3">
+        <div>
+            <label class="text-sm block mb-1">Valor Total (R$) *</label>
+            <input name="valor" id="c_valor" class="w-full border rounded px-3 py-2" oninput="formatCurrencyInput(this)"
+                required />
+        </div>
+        <div>
+            <label class="text-sm block mb-1">Parcelas</label>
+            <input name="parcelas" id="c_parcelas" type="number" min="1" class="w-full border rounded px-3 py-2" />
+        </div>
+    </div>
+
+    <!-- Situação -->
+    <div>
+        <label class="text-sm block mb-1">Situação</label>
+        <select name="situacao" id="c_situacao" class="w-full border rounded px-3 py-2">
+            <option value="1">Aguardando</option>
+            <option value="2">Ativo</option>
+            <option value="3">Encerrado</option>
+            <option value="4">Cancelado</option>
+        </select>
+    </div>
+
+    <!-- Erro -->
+    <p id="contratoError" class="text-sm text-red-600"></p>
+
+    <!-- Botões -->
+    <div class="flex gap-3">
+        <button type="submit" class="px-4 py-2 bg-emerald-500 text-white rounded">Salvar</button>
+        <a href="{{ url_for('main.create') }}" class="px-4 py-2 border rounded">Cancelar</a>
+    </div>
+</form>
+
+{% endblock %}

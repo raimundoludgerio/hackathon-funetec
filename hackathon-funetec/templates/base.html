@@ -23,6 +23,14 @@
 
     <main class="page">
         <!-- ALGUMA COISA QUALQUER -->
+
+
+
+        {% block content %}
+
+        {% endblock %}
+
+
         <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
         <script>
             new window.VLibras.Widget('https://vlibras.gov.br/app');
@@ -34,8 +42,6 @@
                 <div class="vw-plugin-top-wrapper"></div>
             </div>
         </div>
-
-        {% block content %}{% endblock %}
     </main>
 
     <script src="{{ url_for('static', filename='javascript/dashboard.js') }}"></script>
