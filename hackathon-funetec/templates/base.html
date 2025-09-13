@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Projeto{% endblock %}
+{% block content %}
+  <!-- O HTML do dashboard que você já tem pode ficar aqui.
+       Para agilizar, inclua a marcação principal e elementos com IDs que o JS usa. -->
+  <div class="app">
+    <header class="topbar">
+      <div class="logo"><span class="mark"></span> Hackathon - Gestor</div>
+      <div class="search"><input id="globalSearch" placeholder="Pesquisar projetos, ordens, contratos..." /></div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <a class="btn" href="{{ url_for('projects.create') }}">Novo Projeto</a>
+        <button class="btn ghost" onclick="openNotifications()">Notificações</button>
+      </div>
+    </header>
+
+    <aside class="sidebar">
+      <h4>Filtros rápidos</h4>
+      <div class="filter-list">
+        <div class="chip" onclick="filterBy('all')">Todos</div>
+        <div class="chip" onclick="filterBy('1')">Aguardando Início</div>
+        <div class="chip" onclick="filterBy('2')">Em andamento</div>
+        <div class="chip" onclick="filterBy('6')">Concluídos</div>
+      </div>
+
+      <hr style="margin:12px 0;border:none;border-top:1px solid #f1f5f9" />
+      <h4>Projetos recentes</h4>
+      <div id="recentProjects" style="display:flex;flex-direction:column;gap:8px;margin-top:8px;"></div>
+    </aside>
+
+    <main class="content">
+      <h2>Painel do Projeto: <span id="projectTitle">{{ data.project.nome if data and data.project else '—' }}</span></h2>
+
+      <div class="pipeline" id="pipeline"></div>
+
+      <div class="orders-list">
+        <h4>Ordens relacionadas</h4>
+        <table>
+          <thead><tr><th>Cod</th><th>Tipo</th><th>Data</th><th>Valor</th><th>Situação</th></tr></thead>
+          <tbody id="ordersTableBody"></tbody>
+        </table>
+      </div>
+    </main>
+
+    <aside class="drawer" id="drawer">
+      <h3>Selecione um card para ver detalhes</h3>
+      <p class="muted-note">Ao clicar em um card "Contrato" você verá o formulário de contrato à direita.</p>
+
+      <div id="contractForm" style="display:none; margin-top:12px;">
+        <!-- form fields -->
+        <h3>Contrato</h3>
+        <div class="form-row">
+          <div class="field">
+            <label for="numContrato">Número do Contrato</label>
+            <input id="numContrato" type="text" placeholder="0001/2025" />
+          </div>
+          <div class="field">
+            <label for="contratado">Nome</label>
+            <input id="contratado" type="text" placeholder="Nome do contratado" />
+          </div>
+        </div>
+        <!-- more fields... -->
+        <div style="margin-top:12px; display:flex; gap:8px;">
+          <button class="btn" onclick="saveContract()">Salvar</button>
+          <button class="btn ghost" onclick="closeContract()">Fechar</button>
+        </div>
+        <p id="formError" style="color:#b91c1c; margin-top:8px; display:none;"></p>
+      </div>
+    </aside>
+  </div>
+{% endblock %}
