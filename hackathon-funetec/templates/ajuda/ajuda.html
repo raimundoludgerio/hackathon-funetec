@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Central de Ajuda</title>
+  <style>
+    :root {
+      --primary: #563A9C;
+      --second: #6A42C2;
+      --third: #8B5DFF;
+      --background: #FFF7D1;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 20px;
+      background-color: var(--background);
+      color: #2c3e50;
+    }
+
+    h1, h2, h3 {
+      color: var(--primary);
+    }
+
+    .faq {
+      margin-top: 30px;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .faq h2 {
+      color: var(--second);
+      margin-bottom: 20px;
+    }
+
+    .faq-item {
+      margin-bottom: 15px;
+      border-left: 5px solid var(--third);
+      border-radius: 6px;
+      background: #fdfdfd;
+      overflow: hidden;
+    }
+
+    .faq-question {
+      margin: 0;
+      padding: 12px 15px;
+      background: #f6f4ff;
+      color: var(--primary);
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .faq-question:hover {
+      background: #e9e4ff;
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 10px 15px;
+      color: #333;
+      border-top: 1px solid #ddd;
+    }
+
+    .faq-item.active .faq-answer {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Central de Ajuda -->
+  <section class="faq">
+    <h2>Central de Ajuda - Perguntas Frequentes</h2>
+
+    <div class="faq-item">
+      <h4 class="faq-question">O que é a Funetec?</h4>
+      <div class="faq-answer">
+        <p>
+          A FUNETEC-PB é a Fundação de Educação, Tecnologia e Cultura da Paraíba.
+          Instituição privada, sem fins lucrativos, que opera conforme seu Estatuto Social e regimento interno,
+          com princípios de ética, transparência e sustentabilidade.
+        </p>
+        <p>
+          Fundada em 1997, com autorização de funcionamento concedida pelos Ministérios da Educação e de Ciência e Tecnologia em 1999.
+          Credenciada ao Instituto Federal da Paraíba (IFPB) e a várias outras instituições de ensino superior e federais no Nordeste e Norte do Brasil.
+        </p>
+        <p>
+          <strong>Principais atividades e finalidade:</strong> presta serviços de extensão, pesquisa e consultoria nas áreas técnicas,
+          culturais, científicas e administrativas. Atua com gestão administrativa e financeira de projetos de PD&I (Pesquisa,
+          Desenvolvimento e Inovação), ensino e extensão, apoiando pesquisadores, instituições de ensino e empresas.
+        </p>
+        <p>
+          <strong>Estrutura e parcerias:</strong> sede localizada no campus do IFPB em João Pessoa – PB, com unidade administrativa também em João Pessoa.
+          Apoia projetos em parceria com universidades, institutos federais, órgãos públicos e setor privado.
+          Tem atuação em várias áreas: educação, cultura, tecnologia, meio ambiente, inovação social, entre outras.
+        </p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <h4 class="faq-question">O que é um projeto?</h4>
+      <div class="faq-answer">
+        <p>Um projeto é uma iniciativa organizada, com objetivos definidos, prazo de execução e recursos previstos. Pode envolver pesquisa, extensão ou inovação.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <h4 class="faq-question">Como funciona para preencher os dados?</h4>
+      <div class="faq-answer">
+        <p>Para registrar um projeto ou contrato, é necessário preencher corretamente as informações solicitadas no formulário, como datas, valores e situação atual.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <h4 class="faq-question">O que é uma ordem?</h4>
+      <div class="faq-answer">
+        <p>Uma ordem é um documento ou registro interno que formaliza a solicitação de execução de determinada atividade ou despesa dentro de um projeto.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <h4 class="faq-question">Como fazer um contrato?</h4>
+      <div class="faq-answer">
+        <p>O contrato deve ser elaborado com os dados do projeto, definindo as partes envolvidas, prazos, valores e condições. Ele deve ser validado pela Funetec antes da execução.</p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    document.querySelectorAll(".faq-question").forEach(question => {
+      question.addEventListener("click", () => {
+        const item = question.parentElement;
+        item.classList.toggle("active");
+      });
+    });
+  </script>
+
+</body>
+</html>

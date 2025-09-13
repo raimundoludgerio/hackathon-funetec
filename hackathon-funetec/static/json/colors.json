@@ -1,8 +1,8 @@
 {
-  "primary": "563A9C",
-  "second": "6A42C2",
-  "third": "8B5DFF",
-  "background": "FFF7D1",
+  "primary": "#563A9C",
+  "second": "#6A42C2",
+  "third": "#8B5DFF",
+  "background": "#FFF7D1",
   "success": "",
   "warning": "",
   "danger": ""
