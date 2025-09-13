@@ -1,10 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Projetos{% endblock %}
+{% block content %}
+<div style="max-width:1100px;margin:20px auto;padding:10px;">
+  <h2>Projetos</h2>
+  <table style="width:100%;border-collapse:collapse;">
+    <thead><tr><th>Código</th><th>Nome</th><th>Valor</th><th>Situação</th><th>Ações</th></tr></thead>
+    <tbody>
+      {% for p in projects %}
+      <tr>
+        <td>{{ p.cod_projeto }}</td>
+        <td>{{ p.nome }}</td>
+        <td>R$ {{ "%.2f"|format(p.valor) }}</td>
+        <td>{{ p.situacao }}</td>
+        <td><a href="{{ url_for('projects.detail', cod_projeto=p.cod_projeto) }}">Abrir</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

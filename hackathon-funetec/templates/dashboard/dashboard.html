@@ -1,446 +1,59 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Dashboard - Pipeline</title>
-  <style>
-    /* ---------- Reset mínimo ---------- */
-    * { box-sizing: border-box; }
-    body { margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:#f4f6f8; color:#222; }
-    a { color: inherit; text-decoration: none; }
+{% extends "base.html" %}
+{% block title %}Dashboard - Projeto{% endblock %}
+{% block content %}
+<div class="app">
+  <aside class="sidebar">
+    <h4>Filtros rápidos</h4>
+    <div class="filter-list">
+      <div class="chip" onclick="filterBy('all')">Todos</div>
+      <div class="chip" onclick="filterBy('1')">Aguardando</div>
+      <div class="chip" onclick="filterBy('2')">Em andamento</div>
+      <div class="chip" onclick="filterBy('6')">Concluídos</div>
+    </div>
+    <hr/>
+    <h4>Projetos recentes</h4>
+    <div id="recentProjects"></div>
+  </aside>
 
-    /* ---------- Layout ---------- */
-    .app {
-      display: grid;
-      grid-template-columns: 220px 1fr 420px;
-      gap: 20px;
-      min-height: 100vh;
-      padding: 20px;
-    }
+  <section class="content">
+    <h2>Painel do Projeto: <span id="projectTitle">{{ data.project.nome if data and data.project else '—' }}</span></h2>
+    <div class="pipeline" id="pipeline"></div>
 
-    header.topbar {
-      grid-column: 1 / -1;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 16px;
-      padding: 12px 20px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(16,24,40,0.06);
-      margin-bottom: 8px;
-    }
+    <div class="orders-list">
+      <h4>Ordens relacionadas</h4>
+      <table>
+        <thead><tr><th>Cod</th><th>Tipo</th><th>Data</th><th>Valor</th><th>Situação</th></tr></thead>
+        <tbody id="ordersTableBody"></tbody>
+      </table>
+    </div>
+  </section>
 
-    .logo { display:flex; align-items:center; gap:12px; font-weight:700; color:#0f172a; }
-    .logo .mark { width:36px; height:36px; background:#0ea5a4; border-radius:8px; display:inline-block; }
+  <aside class="drawer" id="drawer">
+    <h3>Detalhes</h3>
+    <p class="muted-note">Clique em um card para ver detalhes aqui.</p>
 
-    .search { flex:1; display:flex; justify-content:center; }
-    .search input { width:60%; padding:8px 12px; border-radius:8px; border:1px solid #e6e9ee; }
-
-    /* ---------- Sidebar ---------- */
-    aside.sidebar {
-      background: white;
-      padding:16px;
-      border-radius:12px;
-      box-shadow: 0 6px 20px rgba(16,24,40,0.04);
-      height: fit-content;
-    }
-    .sidebar h4 { margin:0 0 8px 0; font-size:14px; color:#334155; }
-    .filter-list { display:flex; flex-direction:column; gap:8px; }
-    .chip { padding:8px 10px; border-radius:8px; background:#f8fafc; cursor:pointer; border:1px solid #eef2f7; font-size:14px; }
-
-    /* ---------- Main content: pipeline ---------- */
-    main.content {
-      padding: 16px;
-      background: white;
-      border-radius:12px;
-      box-shadow: 0 6px 20px rgba(16,24,40,0.04);
-    }
-    .pipeline {
-      display:flex;
-      gap:18px;
-      align-items:flex-start;
-      overflow-x:auto;
-      padding:8px;
-    }
-
-    .card {
-      min-width:220px;
-      padding:18px;
-      border-radius:12px;
-      background:linear-gradient(180deg, #fff, #fff);
-      box-shadow: 0 6px 18px rgba(15,23,42,0.04);
-      position:relative;
-      cursor:pointer;
-      transition:transform .12s ease, box-shadow .12s ease;
-      border:1px solid transparent;
-    }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(15,23,42,0.08); }
-    .card.selected { outline: 3px solid rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.08); }
-
-    .card .icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; margin-bottom:8px; }
-    .card h3 { margin:0; font-size:16px; }
-    .card p { margin:8px 0 0 0; color:#64748b; font-size:13px; }
-
-    .dot { position:absolute; bottom:12px; left:12px; width:12px; height:12px; border-radius:50%; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
-    .green { background:#10b981; color:white; }
-    .yellow { background:#f59e0b; color:white; }
-    .muted { background:#e6edf3; color:#334155; }
-
-    /* colors for icons */
-    .bg-green { background: linear-gradient(135deg,#059669,#10b981); }
-    .bg-yellow { background: linear-gradient(135deg,#f59e0b,#fbbf24); }
-    .bg-gray { background: linear-gradient(135deg,#94a3b8,#e6eef7); color:#0f172a; }
-
-    /* ---------- Right drawer (detail) ---------- */
-    .drawer {
-      background: linear-gradient(180deg,#fff,#fbfbfd);
-      border-radius:12px;
-      padding:20px;
-      box-shadow: 0 6px 20px rgba(16,24,40,0.06);
-      position:relative;
-      min-height:120px;
-    }
-    .drawer h3 { margin-top:0; }
-    .form-row { display:flex; gap:10px; margin-bottom:10px; }
-    .form-row .field { flex:1; display:flex; flex-direction:column; }
-    label { font-size:13px; color:#475569; margin-bottom:6px; }
-    input[type="text"], input[type="date"], input[type="number"] {
-      padding:10px; border-radius:8px; border:1px solid #e6e9ee; font-size:14px;
-    }
-    .muted-note { font-size:13px; color:#64748b; margin-top:8px; }
-
-    .btn { display:inline-block; padding:10px 12px; border-radius:8px; background:#0ea5a4; color:white; border:none; cursor:pointer; }
-    .btn.ghost { background:transparent; color:#334155; border:1px solid #e6e9ee; }
-
-    /* ------------ Table summary ---------- */
-    .orders-list { margin-top:18px; }
-    table { width:100%; border-collapse:collapse; }
-    th, td { text-align:left; padding:10px 8px; font-size:13px; border-bottom:1px solid #f1f5f9; }
-    th { color:#334155; font-weight:600; }
-
-    /* ---------- Responsive ---------- */
-    @media (max-width: 1000px) {
-      .app { grid-template-columns: 1fr; padding:12px; }
-      .drawer { order: 3; }
-    }
-    @media (max-width:720px) {
-      .pipeline { flex-direction:column; gap:12px; }
-      .search input { width:100%; }
-    }
-  </style>
-</head>
-<body>
-  <div class="app">
-    <header class="topbar">
-      <div class="logo"><span class="mark"></span> Hackathon - Gestor</div>
-      <div class="search"><input id="globalSearch" placeholder="Pesquisar projetos, ordens, contratos..." /></div>
-      <div style="display:flex; gap:8px; align-items:center;">
-        <button class="btn" onclick="newProject()">Novo Projeto</button>
-        <button class="btn ghost" onclick="openNotifications()">Notificações</button>
+    <div id="contractForm" style="display:none; margin-top:12px;">
+      <h3>Contrato</h3>
+      <div class="form-row">
+        <div class="field"><label>Número</label><input id="numContrato" type="text" placeholder="0001/2025"></div>
+        <div class="field"><label>Nome</label><input id="contratado" type="text"></div>
       </div>
-    </header>
-
-    <aside class="sidebar">
-      <h4>Filtros rápidos</h4>
-      <div class="filter-list">
-        <div class="chip" onclick="filterBy('all')">Todos</div>
-        <div class="chip" onclick="filterBy('1')">Aguardando Início</div>
-        <div class="chip" onclick="filterBy('2')">Em andamento</div>
-        <div class="chip" onclick="filterBy('6')">Concluídos</div>
+      <div class="form-row">
+        <div class="field"><label>CPF/CNPJ</label><input id="cpfcnpj" maxlength="14" oninput="maskOnlyNumbers(this)"></div>
+        <div class="field"><label>Data início</label><input id="dataInicio" type="date"></div>
       </div>
-
-      <hr style="margin:12px 0;border:none;border-top:1px solid #f1f5f9" />
-      <h4>Projetos recentes</h4>
-      <div id="recentProjects" style="display:flex;flex-direction:column;gap:8px;margin-top:8px;"></div>
-    </aside>
-
-    <main class="content">
-      <h2>Painel do Projeto: <span id="projectTitle">Construção X</span></h2>
-
-      <div class="pipeline" id="pipeline">
-        <!-- pipeline cards gerados por JS -->
-      </div>
-
-      <div class="orders-list">
-        <h4>Ordens relacionadas</h4>
-        <table>
-          <thead><tr><th>Cod</th><th>Tipo</th><th>Data</th><th>Valor</th><th>Situação</th></tr></thead>
-          <tbody id="ordersTableBody"></tbody>
-        </table>
-      </div>
-    </main>
-
-    <aside class="drawer" id="drawer">
-      <h3>Selecione um card para ver detalhes</h3>
-      <p class="muted-note">Ao clicar em um card "Contrato" você verá o formulário de contrato à direita.</p>
-
-      <div id="contractForm" style="display:none; margin-top:12px;">
-        <h3>Contrato</h3>
-        <div class="form-row">
-          <div class="field">
-            <label for="numContrato">Número do Contrato</label>
-            <input id="numContrato" type="text" placeholder="0001/2025" />
-          </div>
-          <div class="field">
-            <label for="contratado">Nome</label>
-            <input id="contratado" type="text" placeholder="Nome do contratado" />
-          </div>
+      <div class="form-row">
+        <div class="field"><label>Valor</label><input id="valor" oninput="formatCurrencyInput(this)"></div>
+        <div class="field"><label>Tipo Pessoa</label>
+          <select id="tipoPessoa"><option value="1">PF</option><option value="2">PJ</option></select>
         </div>
-
-        <div class="form-row">
-          <div class="field">
-            <label for="cpfcnpj">CPF / CNPJ</label>
-            <input id="cpfcnpj" type="text" placeholder="Somente números" oninput="maskOnlyNumbers(this)" maxlength="14"/>
-          </div>
-          <div class="field">
-            <label for="dataInicio">Data de início</label>
-            <input id="dataInicio" type="date" />
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="field">
-            <label for="valor">Valor (BRL)</label>
-            <input id="valor" type="text" placeholder="12000,00" oninput="formatCurrencyInput(this)"/>
-          </div>
-          <div class="field">
-            <label for="tipoPessoa">Tipo Pessoa</label>
-            <select id="tipoPessoa">
-              <option value="1">PF</option>
-              <option value="2">PJ</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="margin-top:12px; display:flex; gap:8px;">
-          <button class="btn" onclick="saveContract()">Salvar</button>
-          <button class="btn ghost" onclick="closeContract()">Fechar</button>
-        </div>
-
-        <p id="formError" style="color:#b91c1c; margin-top:8px; display:none;"></p>
       </div>
-    </aside>
-  </div>
-
-  <script>
-    /* ---------- Dados de exemplo (substituir com backend) ---------- */
-    const data = {
-      project: {
-        codProjeto: 123,
-        nome: "Construção X",
-        dataInicio: "01/03/2025",
-        dataEncerramento: "31/12/2025",
-        valor: 150000.00,
-        situacao: "2"
-      },
-      pipeline: [
-        { type: 'projeto', title: 'Projeto', subtitle: 'Nome do Projeto', color:'green', id: 'p-123', status: '2' },
-        { type: 'requisicao', title: 'Requisição', subtitle: 'Tipo de Requisição', color:'muted', id: 'r-34', status: '1' },
-        { type: 'ordem', title: 'Ordem', subtitle: 'Tipo de Ordem', color:'yellow', id: 'o-987', status: '2' },
-        { type: 'contrato', title: 'Contrato', subtitle: 'Número - Nome', color:'muted', id: 'c-0042', status: '1' }
-      ],
-      orders: [
-        { cod: 987, tipo:'Compra', data:'15/04/2025', valor:12000, situacao:'2' },
-        { cod: 988, tipo:'Serviço', data:'20/05/2025', valor:8000, situacao:'1' }
-      ]
-    };
-
-    /* ---------- Utilitários ---------- */
-    function currencyBRL(value) {
-      return new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' }).format(value);
-    }
-
-    function parseDMY(str) { // "dd/mm/yyyy" -> Date
-      if(!str) return null;
-      const parts = str.split('/');
-      if(parts.length !== 3) return null;
-      return new Date(parts[2], parts[1]-1, parts[0]);
-    }
-
-    function maskOnlyNumbers(el) {
-      el.value = el.value.replace(/\D/g,'');
-    }
-
-    function formatCurrencyInput(el){
-      // keep digits only then format as currency
-      let v = el.value.replace(/\D/g,'');
-      if(!v) { el.value=''; return; }
-      // assume last two are cents
-      while(v.length < 3) v = '0' + v;
-      const cents = v.slice(-2);
-      const intPart = v.slice(0, -2);
-      const formatted = new Intl.NumberFormat('pt-BR').format(parseInt(intPart)) + ',' + cents;
-      el.value = formatted;
-    }
-
-    /* ---------- Render pipeline ---------- */
-    const pipelineEl = document.getElementById('pipeline');
-    const projectTitleEl = document.getElementById('projectTitle');
-    const ordersTableBody = document.getElementById('ordersTableBody');
-    const recentProjectsEl = document.getElementById('recentProjects');
-    const drawer = document.getElementById('drawer');
-    const contractForm = document.getElementById('contractForm');
-
-    projectTitleEl.textContent = data.project.nome;
-
-    function renderPipeline() {
-      pipelineEl.innerHTML = '';
-      data.pipeline.forEach(card => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.dataset.id = card.id;
-        div.dataset.type = card.type;
-
-        // icon
-        const icon = document.createElement('div');
-        icon.className = 'icon ' + (card.color === 'green' ? 'bg-green' : card.color === 'yellow' ? 'bg-yellow' : 'bg-gray');
-        icon.innerHTML = (card.type === 'projeto' ? '📁' : card.type === 'requisicao' ? '📄' : card.type === 'ordem' ? '🧾' : '📑');
-        div.appendChild(icon);
-
-        const h = document.createElement('h3');
-        h.textContent = card.title;
-        div.appendChild(h);
-
-        const p = document.createElement('p');
-        p.textContent = card.subtitle;
-        div.appendChild(p);
-
-        const dot = document.createElement('div');
-        dot.className = 'dot ' + (card.color === 'green' ? 'green' : card.color === 'yellow' ? 'yellow' : 'muted');
-        div.appendChild(dot);
-
-        div.addEventListener('click', () => onCardClick(card));
-        pipelineEl.appendChild(div);
-      });
-    }
-
-    function renderOrdersTable() {
-      ordersTableBody.innerHTML = '';
-      data.orders.forEach(o => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${o.cod}</td><td>${o.tipo}</td><td>${o.data}</td><td>${currencyBRL(o.valor)}</td><td>${statusLabel(o.situacao)}</td>`;
-        ordersTableBody.appendChild(tr);
-      });
-    }
-
-    function renderRecentProjects() {
-      recentProjectsEl.innerHTML = '';
-      // dummy recent list (could come from backend)
-      const recents = [
-        { cod: 123, nome: 'Construção X' },
-        { cod: 124, nome: 'Reforma Y' }
-      ];
-      recents.forEach(p => {
-        const el = document.createElement('div');
-        el.className = 'chip';
-        el.textContent = p.nome;
-        el.onclick = () => { /* open project */ alert('Abrir projeto: ' + p.nome); };
-        recentProjectsEl.appendChild(el);
-      });
-    }
-
-    function statusLabel(code) {
-      const map = { '1':'Aguardando', '2':'Em andamento', '3':'Paralisado', '4':'Suspenso', '5':'Cancelado', '6':'Concluído' };
-      return map[code] || '—';
-    }
-
-    /* ---------- Interações ---------- */
-    function onCardClick(card) {
-      // visual select
-      document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
-      const clicked = Array.from(document.querySelectorAll('.card')).find(c => c.dataset.id === card.id);
-      if(clicked) clicked.classList.add('selected');
-
-      // if it's contrato, open form and populate
-      if(card.type === 'contrato') {
-        openContractForm({
-          numContrato: '0042/2025',
-          contratado: 'Fulano Silva',
-          cpfcnpj: '00000000000',
-          dataInicio: '',
-          valor: '12000,00',
-          tipoPessoa: '1'
-        });
-      } else {
-        // show a brief summary in drawer
-        contractForm.style.display = 'none';
-        drawer.querySelector('h3').textContent = card.title + ' — detalhe';
-        drawer.querySelector('.muted-note').textContent = card.subtitle;
-      }
-    }
-
-    function openContractForm(payload) {
-      drawer.querySelector('h3').textContent = 'Contrato — Detalhes';
-      contractForm.style.display = 'block';
-      document.getElementById('numContrato').value = payload.numContrato || '';
-      document.getElementById('contratado').value = payload.contratado || '';
-      document.getElementById('cpfcnpj').value = payload.cpfcnpj || '';
-      document.getElementById('dataInicio').value = payload.dataInicio || '';
-      document.getElementById('valor').value = payload.valor || '';
-      document.getElementById('tipoPessoa').value = payload.tipoPessoa || '1';
-      document.getElementById('formError').style.display = 'none';
-    }
-
-    function closeContract(){
-      contractForm.style.display = 'none';
-      drawer.querySelector('h3').textContent = 'Selecione um card para ver detalhes';
-      drawer.querySelector('.muted-note').textContent = 'Ao clicar em um card "Contrato" você verá o formulário de contrato à direita.';
-      document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
-    }
-
-    function saveContract(){
-      const numContrato = document.getElementById('numContrato').value.trim();
-      const contratado = document.getElementById('contratado').value.trim();
-      const cpfcnpj = document.getElementById('cpfcnpj').value.replace(/\D/g,'');
-      const dataInicio = document.getElementById('dataInicio').value;
-      const valorStr = document.getElementById('valor').value;
-      const tipoPessoa = document.getElementById('tipoPessoa').value;
-
-      const errEl = document.getElementById('formError');
-
-      // validations
-      if(!/^[0-9]{4}\/[0-9]{4}$/.test(numContrato)) {
-        errEl.textContent = 'Número do contrato deve ter o formato NNNN/AAAA.';
-        errEl.style.display = 'block'; return;
-      }
-      if(!contratado) { errEl.textContent = 'Nome do contratado é obrigatório.'; errEl.style.display = 'block'; return; }
-      if(tipoPessoa === '1' && cpfcnpj.length !== 11 && cpfcnpj.length !== 14) {
-        errEl.textContent = 'CPF inválido. Informe 11 dígitos (PF) ou 14 (CNPJ).';
-        errEl.style.display = 'block'; return;
-      }
-      if(dataInicio && new Date(dataInicio) > new Date()) {
-        // não proíbe, apenas exemplo de regra: dataInicio não pode ser futura? (ajuste conforme regras)
-      }
-      // parse currency to number
-      const numericValue = parseFloat(valorStr.replace(/\./g,'').replace(',','.')) || 0;
-      if(numericValue <= 0) {
-        errEl.textContent = 'Valor do contrato deve ser maior que zero.';
-        errEl.style.display = 'block'; return;
-      }
-
-      errEl.style.display = 'none';
-
-      // Aqui fazer POST para backend (ex: fetch('/contract', {...}))
-      // Simulação:
-      alert('Contrato salvo:\n' + JSON.stringify({ numContrato, contratado, cpfcnpj, dataInicio, valor: numericValue, tipoPessoa }, null, 2));
-    }
-
-    /* ---------- Misc ---------- */
-    function newProject() { alert('Abrir modal criar projeto (implementar)'); }
-    function openNotifications() { alert('Notificações (implementar)'); }
-    function filterBy(code) { alert('Filtrar por situação: ' + code); }
-
-    /* ---------- Inicialização ---------- */
-    renderPipeline();
-    renderOrdersTable();
-    renderRecentProjects();
-
-    // Search binding (exemplo)
-    document.getElementById('globalSearch').addEventListener('keydown', function(e){
-      if(e.key === 'Enter') alert('Pesquisar: ' + this.value);
-    });
-  </script>
-</body>
-</html>
+      <div style="margin-top:10px;">
+        <button class="btn" onclick="saveContract()">Salvar</button>
+        <button class="btn ghost" onclick="closeContract()">Fechar</button>
+      </div>
+      <p id="formError" class="error" style="display:none;"></p>
+    </div>
+  </aside>
+</div>
+{% endblock %}
