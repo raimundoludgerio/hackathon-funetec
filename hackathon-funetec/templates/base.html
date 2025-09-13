@@ -23,6 +23,9 @@
     {% block content %}{% endblock %}
 </main>
 
+{% include 'includes/footer.html' %}
+
+
 <script src="{{ url_for('static', filename='javascript/dashboard.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/projetos.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/forms.js') }}"></script>
